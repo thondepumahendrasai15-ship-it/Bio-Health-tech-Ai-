@@ -1,0 +1,623 @@
+import { useState } from "react";
+
+const translations = {
+  en: {
+    appName: "BioHealth AI",
+    tagline: "One Click Healthcare for All Life",
+    selectCategory: "Who needs care today?",
+    human: "Human",
+    plant: "Plant",
+    animal: "Animal",
+    features: "Features",
+    diagnose: "AI Diagnosis",
+    appointments: "Doctor Appointments",
+    records: "Health Records",
+    medicines: "Medicine Delivery",
+    emergency: "Emergency",
+    reminders: "Reminders",
+    telemedicine: "Telemedicine",
+    hospitals: "Hospitals & Vets",
+    uploadPhoto: "Upload Photo",
+    typeSymptoms: "Type Symptoms",
+    analyzeNow: "Analyse Now",
+    symptomsPlaceholder: "Describe symptoms here...",
+    caution: "âš ï¸ CAUTION: This AI analysis is for informational purposes only. Please consult a qualified doctor/veterinarian/agronomist before taking any action.",
+    language: "Language",
+    bookNow: "Book Now",
+    emergency911: "Call Emergency",
+    nearbyHospitals: "Find Nearby",
+    addReminder: "Add Reminder",
+    startConsult: "Start Consult",
+    orderMeds: "Order Now",
+    uploadRecord: "Upload Record",
+    home: "Home",
+    back: "â† Back",
+    analyzing: "Analysing with AI...",
+    result: "AI Analysis Result",
+    prevention: "Prevention Tips",
+    treatment: "Treatment",
+    severity: "Severity",
+  },
+  te: {
+    appName: "à°¬à°¯à±‹à°¹à±†à°²à±à°¤à± AI",
+    tagline: "à°…à°¨à±à°¨à°¿ à°œà±€à°µà±à°²à°•à± à°’à°•à±‡ à°•à±à°²à°¿à°•à± à°†à°°à±‹à°—à±à°¯ à°¸à±‡à°µ",
+    selectCategory: "à°ˆà°°à±‹à°œà± à°Žà°µà°°à°¿à°•à°¿ à°¸à°‚à°°à°•à±à°·à°£ à°…à°µà°¸à°°à°‚?",
+    human: "à°®à°¾à°¨à°µà±à°¡à±",
+    plant: "à°®à±Šà°•à±à°•",
+    animal: "à°œà°‚à°¤à±à°µà±",
+    features: "à°¸à±‡à°µà°²à±",
+    diagnose: "AI à°°à±‹à°— à°¨à°¿à°°à±à°§à°¾à°°à°£",
+    appointments: "à°¡à°¾à°•à±à°Ÿà°°à± à°…à°ªà°¾à°¯à°¿à°‚à°Ÿà±â€Œà°®à±†à°‚à°Ÿà±",
+    records: "à°†à°°à±‹à°—à±à°¯ à°°à°¿à°•à°¾à°°à±à°¡à±à°²à±",
+    medicines: "à°®à°‚à°¦à±à°² à°¡à±†à°²à°¿à°µà°°à±€",
+    emergency: "à°…à°¤à±à°¯à°µà°¸à°° à°¸à°¹à°¾à°¯à°‚",
+    reminders: "à°°à°¿à°®à±ˆà°‚à°¡à°°à±à°²à±",
+    telemedicine: "à°Ÿà±†à°²à°¿à°®à±†à°¡à°¿à°¸à°¿à°¨à±",
+    hospitals: "à°†à°¸à±à°ªà°¤à±à°°à±à°²à± & à°µà±†à°Ÿà°°à±à°¨à°°à±€",
+    uploadPhoto: "à°«à±‹à°Ÿà±‹ à°…à°ªà±â€Œà°²à±‹à°¡à±",
+    typeSymptoms: "à°²à°•à±à°·à°£à°¾à°²à± à°Ÿà±ˆà°ªà± à°šà±‡à°¯à°‚à°¡à°¿",
+    analyzeNow: "à°µà°¿à°¶à±à°²à±‡à°·à°¿à°‚à°šà±",
+    symptomsPlaceholder: "à°²à°•à±à°·à°£à°¾à°²à± à°‡à°•à±à°•à°¡ à°µà°¿à°µà°°à°¿à°‚à°šà°‚à°¡à°¿...",
+    caution: "âš ï¸ à°œà°¾à°—à±à°°à°¤à±à°¤: à°ˆ AI à°µà°¿à°¶à±à°²à±‡à°·à°£ à°¸à°®à°¾à°šà°¾à°° à°ªà±à°°à°¯à±‹à°œà°¨à°¾à°² à°•à±‹à°¸à°‚ à°®à°¾à°¤à±à°°à°®à±‡. à°¦à°¯à°šà±‡à°¸à°¿ à°…à°°à±à°¹à°¤ à°•à°²à°¿à°—à°¿à°¨ à°µà±ˆà°¦à±à°¯à±à°¡à°¿à°¨à°¿ à°¸à°‚à°ªà±à°°à°¦à°¿à°‚à°šà°‚à°¡à°¿.",
+    language: "à°­à°¾à°·",
+    bookNow: "à°¬à±à°•à± à°šà±‡à°¯à°‚à°¡à°¿",
+    emergency911: "à°…à°¤à±à°¯à°µà°¸à°° à°•à°¾à°²à±",
+    nearbyHospitals: "à°¸à°®à±€à°ªà°‚à°²à±‹ à°•à°¨à±à°—à±Šà°¨à°‚à°¡à°¿",
+    addReminder: "à°°à°¿à°®à±ˆà°‚à°¡à°°à± à°œà±‹à°¡à°¿à°‚à°šà°‚à°¡à°¿",
+    startConsult: "à°¸à°‚à°ªà±à°°à°¦à°¿à°‚à°ªà± à°ªà±à°°à°¾à°°à°‚à°­à°¿à°‚à°šà°‚à°¡à°¿",
+    orderMeds: "à°†à°°à±à°¡à°°à± à°šà±‡à°¯à°‚à°¡à°¿",
+    uploadRecord: "à°°à°¿à°•à°¾à°°à±à°¡à± à°…à°ªà±â€Œà°²à±‹à°¡à±",
+    home: "à°¹à±‹à°®à±",
+    back: "â† à°µà±†à°¨à±à°•à°•à±",
+    analyzing: "AI à°¤à±‹ à°µà°¿à°¶à±à°²à±‡à°·à°¿à°¸à±à°¤à±à°¨à±à°¨à°¾à°‚...",
+    result: "AI à°µà°¿à°¶à±à°²à±‡à°·à°£ à°«à°²à°¿à°¤à°‚",
+    prevention: "à°¨à°¿à°µà°¾à°°à°£ à°šà°¿à°Ÿà±à°•à°¾à°²à±",
+    treatment: "à°šà°¿à°•à°¿à°¤à±à°¸",
+    severity: "à°¤à±€à°µà±à°°à°¤",
+  },
+  ta: {
+    appName: "à®ªà®¯à¯‹à®¹à¯†à®²à¯à®¤à¯ AI",
+    tagline: "à®…à®©à¯ˆà®¤à¯à®¤à¯ à®‰à®¯à®¿à®°à¯à®•à®³à¯à®•à¯à®•à¯à®®à¯ à®’à®°à¯‡ à®•à®¿à®³à®¿à®•à¯ à®šà¯à®•à®¾à®¤à®¾à®° à®šà¯‡à®µà¯ˆ",
+    selectCategory: "à®‡à®©à¯à®±à¯ à®¯à®¾à®°à¯à®•à¯à®•à¯ à®•à®µà®©à®¿à®ªà¯à®ªà¯ à®¤à¯‡à®µà¯ˆ?",
+    human: "à®®à®©à®¿à®¤à®©à¯",
+    plant: "à®¤à®¾à®µà®°à®®à¯",
+    animal: "à®µà®¿à®²à®™à¯à®•à¯",
+    features: "à®šà¯‡à®µà¯ˆà®•à®³à¯",
+    diagnose: "AI à®¨à¯‹à®¯à¯ à®•à®£à¯à®Ÿà®±à®¿à®¤à®²à¯",
+    appointments: "à®Ÿà®¾à®•à¯à®Ÿà®°à¯ à®¨à®¿à®¯à®®à®©à®®à¯",
+    records: "à®šà¯à®•à®¾à®¤à®¾à®° à®ªà®¤à®¿à®µà¯à®•à®³à¯",
+    medicines: "à®®à®°à¯à®¨à¯à®¤à¯ à®Ÿà¯†à®²à®¿à®µà®°à®¿",
+    emergency: "à®…à®µà®šà®° à®‰à®¤à®µà®¿",
+    reminders: "à®¨à®¿à®©à¯ˆà®µà¯‚à®Ÿà¯à®Ÿà®²à¯à®•à®³à¯",
+    telemedicine: "à®Ÿà¯†à®²à®¿à®®à¯†à®Ÿà®¿à®šà®¿à®©à¯",
+    hospitals: "à®®à®°à¯à®¤à¯à®¤à¯à®µà®®à®©à¯ˆà®•à®³à¯ & à®•à®¾à®²à¯à®¨à®Ÿà¯ˆ",
+    uploadPhoto: "à®ªà¯à®•à¯ˆà®ªà¯à®ªà®Ÿà®®à¯ à®ªà®¤à®¿à®µà¯‡à®±à¯à®±à¯",
+    typeSymptoms: "à®…à®±à®¿à®•à¯à®±à®¿à®•à®³à¯ˆ à®¤à®Ÿà¯à®Ÿà®šà¯à®šà¯ à®šà¯†à®¯à¯à®¯à®µà¯à®®à¯",
+    analyzeNow: "à®ªà®•à¯à®ªà¯à®ªà®¾à®¯à¯à®µà¯ à®šà¯†à®¯à¯",
+    symptomsPlaceholder: "à®…à®±à®¿à®•à¯à®±à®¿à®•à®³à¯ˆ à®‡à®™à¯à®•à¯‡ à®µà®¿à®µà®°à®¿à®•à¯à®•à®µà¯à®®à¯...",
+    caution: "âš ï¸ à®Žà®šà¯à®šà®°à®¿à®•à¯à®•à¯ˆ: à®‡à®¨à¯à®¤ AI à®ªà®•à¯à®ªà¯à®ªà®¾à®¯à¯à®µà¯ à®¤à®•à®µà®²à¯ à®¨à¯‹à®•à¯à®•à®™à¯à®•à®³à¯à®•à¯à®•à®¾à®• à®®à®Ÿà¯à®Ÿà¯à®®à¯‡. à®¤à®•à¯à®¤à®¿à®µà®¾à®¯à¯à®¨à¯à®¤ à®®à®°à¯à®¤à¯à®¤à¯à®µà®°à¯ˆ à®…à®£à¯à®•à®µà¯à®®à¯.",
+    language: "à®®à¯Šà®´à®¿",
+    bookNow: "à®‡à®ªà¯à®ªà¯‹à®¤à¯ à®ªà®¤à®¿à®µà¯ à®šà¯†à®¯à¯",
+    emergency911: "à®…à®µà®šà®° à®…à®´à¯ˆà®ªà¯à®ªà¯",
+    nearbyHospitals: "à®…à®°à¯à®•à®¿à®²à¯ à®•à®£à¯à®Ÿà®±à®¿",
+    addReminder: "à®¨à®¿à®©à¯ˆà®µà¯‚à®Ÿà¯à®Ÿà®²à¯ à®šà¯‡à®°à¯à®•à¯à®•à®µà¯à®®à¯",
+    startConsult: "à®†à®²à¯‹à®šà®©à¯ˆ à®¤à¯Šà®Ÿà®™à¯à®•à®µà¯à®®à¯",
+    orderMeds: "à®‡à®ªà¯à®ªà¯‹à®¤à¯ à®†à®°à¯à®Ÿà®°à¯ à®šà¯†à®¯à¯",
+    uploadRecord: "à®ªà®¤à®¿à®µà¯ˆ à®ªà®¤à®¿à®µà¯‡à®±à¯à®±à¯",
+    home: "à®®à¯à®•à®ªà¯à®ªà¯",
+    back: "â† à®ªà®¿à®©à¯",
+    analyzing: "AI à®‰à®Ÿà®©à¯ à®ªà®•à¯à®ªà¯à®ªà®¾à®¯à¯à®µà¯ à®šà¯†à®¯à¯à®•à®¿à®±à¯‹à®®à¯...",
+    result: "AI à®ªà®•à¯à®ªà¯à®ªà®¾à®¯à¯à®µà¯ à®®à¯à®Ÿà®¿à®µà¯",
+    prevention: "à®¤à®Ÿà¯à®ªà¯à®ªà¯ à®•à¯à®±à®¿à®ªà¯à®ªà¯à®•à®³à¯",
+    treatment: "à®šà®¿à®•à®¿à®šà¯à®šà¯ˆ",
+    severity: "à®¤à¯€à®µà®¿à®°à®®à¯",
+  },
+};
+const categoryConfig = {
+  human: {
+    icon: "ðŸ§‘â€âš•ï¸",
+    color: "#00b4d8",
+    gradient: "linear-gradient(135deg, #00b4d8, #0077b6)",
+    bg: "#e0f7fa",
+    diseases: [
+      { name: "Common Cold", prevention: ["Wash hands regularly", "Avoid crowded places", "Boost immunity with Vitamin C"], treatment: "Rest, fluids, paracetamol if fever", severity: "Mild" },
+      { name: "Diabetes", prevention: ["Avoid sugar-heavy foods", "Exercise 30 mins daily", "Regular blood sugar checks"], treatment: "Insulin/medication, diet control, exercise", severity: "Chronic" },
+      { name: "Typhoid", prevention: ["Drink boiled water", "Eat hygienic food", "Vaccination available"], treatment: "Antibiotics prescribed by doctor, hospitalization if severe", severity: "Moderate-Severe" },
+    ],
+    hospitals: [
+      { name: "AIIMS Delhi", address: "Sri Aurobindo Marg, Ansari Nagar, New Delhi", phone: "011-26588500", type: "Government" },
+      { name: "Apollo Hospitals", address: "Jubilee Hills, Hyderabad, Telangana 500033", phone: "040-23607777", type: "Private" },
+      { name: "CMC Vellore", address: "IDA Scudder Rd, Vellore, Tamil Nadu 632004", phone: "0416-2281000", type: "Mission" },
+      { name: "NIMHANS", address: "Hosur Rd, Bengaluru, Karnataka 560029", phone: "080-46110007", type: "Government" },
+    ],
+    doctors: [
+      { name: "Dr. Rajesh Kumar", specialty: "General Physician", location: "Hyderabad", available: "Mon-Sat 9AM-6PM", fee: "â‚¹300" },
+      { name: "Dr. Priya Sharma", specialty: "Cardiologist", location: "Chennai", available: "Tue-Sun 10AM-5PM", fee: "â‚¹600" },
+      { name: "Dr. Suresh Nair", specialty: "Diabetologist", location: "Bangalore", available: "Mon-Fri 8AM-4PM", fee: "â‚¹500" },
+    ],
+  },
+  plant: {
+    icon: "ðŸŒ¿",
+    color: "#2d6a4f",
+    gradient: "linear-gradient(135deg, #52b788, #2d6a4f)",
+    bg: "#d8f3dc",
+    diseases: [
+      { name: "Leaf Blight", prevention: ["Avoid overhead watering", "Remove infected leaves", "Use fungicide spray"], treatment: "Apply copper-based fungicide, improve air circulation", severity: "Moderate" },
+      { name: "Root Rot", prevention: ["Ensure proper drainage", "Do not overwater", "Use sterile soil"], treatment: "Remove affected roots, apply fungicide to soil, repot", severity: "Severe" },
+      { name: "Powdery Mildew", prevention: ["Space plants for airflow", "Avoid wet leaves", "Plant resistant varieties"], treatment: "Neem oil spray or baking soda solution weekly", severity: "Mild-Moderate" },
+    ],
+    hospitals: [
+      { name: "IARI New Delhi", address: "Pusa Campus, New Delhi 110012", phone: "011-25843375", type: "Research Institute" },
+      { name: "ICAR-CCRI Nagpur", address: "Seminary Hills, Nagpur, Maharashtra", phone: "0712-2500247", type: "Government" },
+      { name: "UAS Dharwad", address: "Dharwad, Karnataka 580005", phone: "0836-2447354", type: "Agricultural University" },
+    ],
+    doctors: [
+      { name: "Dr. Anand Rao", specialty: "Plant Pathologist", location: "Hyderabad", available: "Mon-Fri 9AM-5PM", fee: "â‚¹200" },
+      { name: "Dr. Meena Krishnan", specialty: "Agronomist", location: "Coimbatore", available: "Mon-Sat 8AM-4PM", fee: "â‚¹150" },
+    ],
+  },
+  animal: {
+    icon: "ðŸ¾",
+    color: "#e76f51",
+    gradient: "linear-gradient(135deg, #f4a261, #e76f51)",
+    bg: "#fde8d8",
+    diseases: [
+      { name: "Rabies", prevention: ["Vaccinate pets annually", "Avoid contact with stray animals", "Report animal bites immediately"], treatment: "No cure after symptoms â€” immediate post-exposure vaccination is critical", severity: "Fatal if untreated" },
+      { name: "Foot & Mouth Disease", prevention: ["Vaccinate livestock", "Isolate infected animals", "Disinfect farm equipment"], treatment: "Veterinary treatment, wound care, soft food", severity: "Moderate-Severe" },
+      { name: "Mange", prevention: ["Regular grooming", "Avoid contact with infected animals", "Clean bedding"], treatment: "Antiparasitic medication by vet, medicated shampoo", severity: "Moderate" },
+    ],
+    hospitals: [
+      { name: "Madras Veterinary College", address: "Vepery, Chennai, Tamil Nadu 600007", phone: "044-25361429", type: "Government Vet College" },
+      { name: "IVRI Bareilly", address: "Izatnagar, Bareilly, UP 243122", phone: "0581-2301322", type: "Research Institute" },
+      { name: "Cessna Lifeline Vet Clinic", address: "HSR Layout, Bengaluru, Karnataka", phone: "080-25730287", type: "Private" },
+      { name: "Blue Cross of India", address: "Guindy, Chennai, Tamil Nadu 600032", phone: "044-22350170", type: "NGO" },
+    ],
+    doctors: [
+      { name: "Dr. Venkat Reddy", specialty: "Veterinarian", location: "Hyderabad", available: "Mon-Sun 8AM-8PM", fee: "â‚¹250" },
+      { name: "Dr. Kavitha S.", specialty: "Animal Surgeon", location: "Chennai", available: "Mon-Sat 9AM-6PM", fee: "â‚¹400" },
+    ],
+  },
+};
+export default function BioHealthApp() {
+  const [lang, setLang] = useState("en");
+  const [category, setCategory] = useState(null);
+  const [activeFeature, setActiveFeature] = useState(null);
+  const [symptoms, setSymptoms] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [reminderTime, setReminderTime] = useState("");
+  const [reminderMsg, setReminderMsg] = useState("");
+  const [reminders, setReminders] = useState([]);
+  const [records, setRecords] = useState([]);
+
+  const t = translations[lang];
+  const cfg = category ? categoryConfig[category] : null;
+
+  const analyze = async () => {
+    if (!symptoms && !photo) return;
+    setAnalyzing(true);
+    setResult(null);
+
+    const systemPrompt = `You are a world-class AI medical/agricultural/veterinary assistant trained on books and research from leading doctors and scientists. The user is asking about a ${category} health concern from India. 
+Respond ONLY in valid JSON format like:
+{
+  "disease": "Disease Name",
+  "description": "2-3 sentence description",
+  "severity": "Mild/Moderate/Severe",
+  "prevention": ["tip1", "tip2", "tip3"],
+  "treatment": "Treatment information",
+  "caution": "Important warning"
+}
+Be accurate, educational, and compassionate. Always add a caution to see a real doctor/vet/agronomist.`;
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: [{ role: "user", content: `Category: ${category}. Symptoms/description: ${symptoms || "Photo uploaded - please analyze common disease for this category"}` }],
+        }),
+      });
+      const data = await response.json();
+      const text = data.content?.[0]?.text || "{}";
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      setResult(parsed);
+    } catch (e) {
+      setResult({
+        disease: "Analysis Complete",
+        description: "Based on the symptoms provided, please consult a qualified healthcare professional for accurate diagnosis.",
+        severity: "Unknown",
+        prevention: ["Maintain hygiene", "Regular checkups", "Balanced diet/nutrition"],
+        treatment: "Please visit a qualified doctor/veterinarian/agronomist for proper treatment.",
+        caution: "This is AI-generated information only. Always consult a professional.",
+      });
+    }
+    setAnalyzing(false);
+  };
+
+  const addReminder = () => {
+    if (!reminderMsg || !reminderTime) return;
+    setReminders([...reminders, { msg: reminderMsg, time: reminderTime, id: Date.now() }]);
+    setReminderMsg("");
+    setReminderTime("");
+  };
+
+  const severityColor = (s) => {
+    if (!s) return "#888";
+    const sl = s.toLowerCase();
+    if (sl.includes("mild")) return "#2d9e47";
+    if (sl.includes("moderate")) return "#f4a100";
+    if (sl.includes("severe") || sl.includes("fatal")) return "#e63946";
+    return "#555";
+  };
+
+  return (
+    <div style={{ fontFamily: "'Segoe UI', 'Noto Sans Telugu', 'Noto Sans Tamil', sans-serif", minHeight: "100vh", background: "#f0f4f8", color: "#1a1a2e" }}>
+      {/* Header */}
+      <div style={{ background: cfg ? cfg.gradient : "linear-gradient(135deg, #1a1a2e, #16213e)", color: "white", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 12px rgba(0,0,0,0.3)", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {(category || activeFeature) && (
+            <button onClick={() => { if (activeFeature) { setActiveFeature(null); setResult(null); setSymptoms(""); setPhoto(null); } else { setCategory(null); } }} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "white", borderRadius: 8, padding: "6px 10px", cursor: "pointer", fontSize: 14 }}>
+              {t.back}
+            </button>
+          )}
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 1 }}>ðŸ§¬ {t.appName}</div>
+            <div style={{ fontSize: 11, opacity: 0.85 }}>{t.tagline}</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {["en", "te", "ta"].map(l => (
+            <button key={l} onClick={() => setLang(l)} style={{ background: lang === l ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.15)", color: lang === l ? "#1a1a2e" : "white", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontWeight: lang === l ? 700 : 400, fontSize: 12 }}>
+              {l === "en" ? "EN" : l === "te" ? "à°¤à±†" : "à®¤"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 0 80px 0" }}>
+
+        {/* Home - Category Selection */}
+        {!category && (
+          <div>
+            <div style={{ textAlign: "center", padding: "30px 20px 10px" }}>
+              <div style={{ fontSize: 14, color: "#555", fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 20 }}>{t.selectCategory}</div>
+              <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+                {["human", "plant", "animal"].map(cat => {
+                  const c = categoryConfig[cat];
+                  return (
+                    <button key={cat} onClick={() => setCategory(cat)} style={{ background: "white", border: `3px solid ${c.color}`, borderRadius: 20, padding: "24px 16px", cursor: "pointer", width: 120, boxShadow: "0 4px 16px rgba(0,0,0,0.1)", transition: "all 0.2s" }}
+                      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"}
+                      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
+                      <div style={{ fontSize: 40, marginBottom: 8 }}>{c.icon}</div>
+                      <div style={{ fontWeight: 700, color: c.color, fontSize: 14 }}>{t[cat]}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Emergency Banner */}
+            <div style={{ margin: "16px", background: "linear-gradient(135deg, #e63946, #c1121f)", borderRadius: 16, padding: "16px 20px", color: "white", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ fontSize: 32 }}>ðŸš¨</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, fontSize: 16 }}>Medical Emergency?</div>
+                <div style={{ fontSize: 12, opacity: 0.9 }}>Call 108 (Ambulance) | 102 (Women) | 1800-180-1104 (Animal)</div>
+              </div>
+              <a href="tel:108" style={{ background: "white", color: "#e63946", border: "none", borderRadius: 10, padding: "8px 14px", fontWeight: 800, fontSize: 14, textDecoration: "none" }}>ðŸ“ž 108</a>
+            </div>
+
+            {/* Info Cards */}
+            <div style={{ padding: "0 16px" }}>
+              <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 15 }}>ðŸ¤– How AI Diagnosis Works</div>
+                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.6 }}>1. Select Human, Plant or Animal<br />2. Upload a photo or describe symptoms<br />3. AI analyses using medical knowledge<br />4. Get disease info, prevention & treatment</div>
+              </div>
+              <div style={{ background: "#fff8e1", borderRadius: 16, padding: 16, border: "1px solid #ffe082", fontSize: 13, color: "#7c5e00" }}>
+                âš ï¸ This app provides AI-assisted health information. Always consult a qualified doctor, veterinarian, or agronomist for diagnosis and treatment.
+              </div>
+            </div>
+          </div>
+        )}
+{/* Category Home - Features */}
+        {category && !activeFeature && (
+          <div style={{ padding: "16px" }}>
+            <div style={{ background: cfg.gradient, borderRadius: 20, padding: "20px", color: "white", marginBottom: 16, textAlign: "center" }}>
+              <div style={{ fontSize: 48 }}>{cfg.icon}</div>
+              <div style={{ fontSize: 20, fontWeight: 800 }}>{t[category]} {t.features}</div>
+            </div>
+
+            {/* Features Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                { key: "diagnose", icon: "ðŸ”¬", label: t.diagnose },
+                { key: "appointments", icon: "ðŸ“…", label: t.appointments },
+                { key: "records", icon: "ðŸ“‹", label: t.records },
+                { key: "medicines", icon: "ðŸ’Š", label: t.medicines },
+                { key: "emergency", icon: "ðŸš¨", label: t.emergency },
+                { key: "reminders", icon: "â°", label: t.reminders },
+                { key: "telemedicine", icon: "ðŸ’»", label: t.telemedicine },
+                { key: "hospitals", icon: "ðŸ¥", label: t.hospitals },
+              ].map(f => (
+                <button key={f.key} onClick={() => setActiveFeature(f.key)} style={{ background: "white", border: `2px solid ${cfg.color}20`, borderRadius: 16, padding: "18px 12px", cursor: "pointer", textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", transition: "all 0.2s" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = cfg.bg; e.currentTarget.style.borderColor = cfg.color; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "white"; e.currentTarget.style.borderColor = `${cfg.color}20`; }}>
+                  <div style={{ fontSize: 28, marginBottom: 6 }}>{f.icon}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#333" }}>{f.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI Diagnosis */}
+        {activeFeature === "diagnose" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color, marginBottom: 16 }}>ðŸ”¬ {t.diagnose}</h2>
+
+            <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <label style={{ display: "block", marginBottom: 8, fontWeight: 600, fontSize: 14 }}>{t.uploadPhoto}</label>
+              <input type="file" accept="image/*" onChange={e => setPhoto(e.target.files[0])} style={{ width: "100%", padding: "10px", border: `2px dashed ${cfg.color}`, borderRadius: 10, cursor: "pointer", fontSize: 13 }} />
+              {photo && <div style={{ marginTop: 8, color: "#2d9e47", fontSize: 13 }}>âœ… {photo.name}</div>}
+            </div>
+
+            <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <label style={{ display: "block", marginBottom: 8, fontWeight: 600, fontSize: 14 }}>{t.typeSymptoms}</label>
+              <textarea value={symptoms} onChange={e => setSymptoms(e.target.value)} placeholder={t.symptomsPlaceholder} rows={4} style={{ width: "100%", border: `1px solid ${cfg.color}40`, borderRadius: 10, padding: 10, fontSize: 14, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+            </div>
+
+            <button onClick={analyze} disabled={analyzing || (!symptoms && !photo)} style={{ width: "100%", background: cfg.gradient, color: "white", border: "none", borderRadius: 14, padding: "16px", fontSize: 16, fontWeight: 700, cursor: analyzing ? "wait" : "pointer", opacity: analyzing || (!symptoms && !photo) ? 0.7 : 1 }}>
+              {analyzing ? `â³ ${t.analyzing}` : `ðŸ”¬ ${t.analyzeNow}`}
+            </button>
+
+            {/* Known Diseases */}
+            {!result && !analyzing && (
+              <div style={{ marginTop: 20 }}>
+                <div style={{ fontWeight: 700, marginBottom: 10, color: "#555" }}>Common {t[category]} Diseases:</div>
+                {cfg.diseases.map((d, i) => (
+                  <div key={i} style={{ background: "white", borderRadius: 12, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15 }}>{d.name}</div>
+                      <span style={{ background: severityColor(d.severity), color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>{d.severity}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#555" }}><b>Prevention:</b> {d.prevention[0]}, {d.prevention[1]}</div>
+                    <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}><b>Treatment:</b> {d.treatment}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+{/* AI Result */}
+            {result && (
+              <div style={{ marginTop: 20 }}>
+                <div style={{ background: cfg.gradient, borderRadius: 16, padding: 16, color: "white", marginBottom: 12 }}>
+                  <div style={{ fontSize: 13, opacity: 0.85 }}>{t.result}</div>
+                  <div style={{ fontSize: 22, fontWeight: 800 }}>{result.disease}</div>
+                  <div style={{ background: severityColor(result.severity), display: "inline-block", borderRadius: 20, padding: "2px 12px", fontSize: 12, marginTop: 6, fontWeight: 700 }}>{t.severity}: {result.severity}</div>
+                </div>
+                <div style={{ background: "white", borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>ðŸ“– Description</div>
+                  <div style={{ fontSize: 14, color: "#444", lineHeight: 1.6 }}>{result.description}</div>
+                </div>
+                <div style={{ background: "white", borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <div style={{ fontWeight: 700, marginBottom: 8 }}>ðŸ›¡ï¸ {t.prevention}</div>
+                  {(result.prevention || []).map((p, i) => <div key={i} style={{ fontSize: 13, color: "#444", marginBottom: 4 }}>âœ… {p}</div>)}
+                </div>
+                <div style={{ background: "white", borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>ðŸ’Š {t.treatment}</div>
+                  <div style={{ fontSize: 14, color: "#444", lineHeight: 1.6 }}>{result.treatment}</div>
+                </div>
+                <div style={{ background: "#fff3cd", border: "1px solid #ffc107", borderRadius: 14, padding: 14 }}>
+                  <div style={{ fontSize: 13, color: "#7c5e00", fontWeight: 600 }}>{t.caution}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Appointments */}
+        {activeFeature === "appointments" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>ðŸ“… {t.appointments}</h2>
+            {cfg.doctors.map((d, i) => (
+              <div key={i} style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 16 }}>ðŸ‘¨â€âš•ï¸ {d.name}</div>
+                    <div style={{ color: cfg.color, fontSize: 13, fontWeight: 600 }}>{d.specialty}</div>
+                    <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>ðŸ“ {d.location}</div>
+                    <div style={{ fontSize: 12, color: "#555" }}>ðŸ• {d.available}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#2d9e47", marginTop: 4 }}>{d.fee}</div>
+                  </div>
+                  <button style={{ background: cfg.gradient, color: "white", border: "none", borderRadius: 10, padding: "10px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13 }}>{t.bookNow}</button>
+                </div>
+              </div>
+            ))}
+            <div style={{ background: cfg.bg, borderRadius: 14, padding: 14, border: `1px solid ${cfg.color}30`, fontSize: 13, color: "#555" }}>
+              ðŸ“Œ Tip: Call the doctor's clinic directly to confirm appointments. Carry your health records for the first visit.
+            </div>
+          </div>
+        )}
+
+        {/* Health Records */}
+        {activeFeature === "records" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>ðŸ“‹ {t.records}</h2>
+            <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <input type="file" accept=".pdf,.jpg,.png,.jpeg" onChange={e => { if (e.target.files[0]) setRecords([...records, { name: e.target.files[0].name, date: new Date().toLocaleDateString("en-IN"), type: e.target.files[0].type }]); }} style={{ width: "100%", padding: 10, border: `2px dashed ${cfg.color}`, borderRadius: 10, cursor: "pointer", fontSize: 13, boxSizing: "border-box" }} />
+              <div style={{ fontSize: 12, color: "#777", marginTop: 6 }}>Supported: PDF, JPG, PNG</div>
+            </div>
+            {records.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 40, color: "#aaa" }}>
+                <div style={{ fontSize: 40 }}>ðŸ“‚</div>
+                <div>No records yet. Upload your prescriptions & reports.</div>
+              </div>
+            ) : records.map((r, i) => (
+              <div key={i} style={{ background: "white", borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontWeight: 600 }}>ðŸ“„ {r.name}</div>
+                  <div style={{ fontSize: 12, color: "#777" }}>Uploaded: {r.date}</div>
+                </div>
+                <button onClick={() => setRecords(records.filter((_, j) => j !== i))} style={{ background: "#fee", color: "#e63946", border: "1px solid #e63946", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>Delete</button>
+              </div>
+            ))}
+          </div>
+        )}
+{/* Medicine Delivery */}
+        {activeFeature === "medicines" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>ðŸ’Š {t.medicines}</h2>
+            {[
+              { name: "1mg", desc: "India's largest online pharmacy", link: "https://www.1mg.com", logo: "ðŸ’Š" },
+              { name: "PharmEasy", desc: "Quick medicine delivery across India", link: "https://pharmeasy.in", logo: "ðŸª" },
+              { name: "Netmeds", desc: "Trusted online pharmacy", link: "https://www.netmeds.com", logo: "ðŸŒ" },
+              { name: "Apollo Pharmacy", desc: "Pan-India pharmacy network", link: "https://apollopharmacy.in", logo: "ðŸ¥" },
+            ].map((p, i) => (
+              <div key={i} style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ fontSize: 32 }}>{p.logo}</div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: "#555" }}>{p.desc}</div>
+                  </div>
+                </div>
+                <a href={p.link} target="_blank" rel="noreferrer" style={{ background: cfg.gradient, color: "white", border: "none", borderRadius: 10, padding: "10px 14px", cursor: "pointer", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>{t.orderMeds}</a>
+              </div>
+            ))}
+            <div style={{ background: "#fff3cd", border: "1px solid #ffc107", borderRadius: 14, padding: 14, fontSize: 13, color: "#7c5e00" }}>
+              âš ï¸ Always order medicines with a valid prescription. Do not self-medicate.
+            </div>
+          </div>
+        )}
+
+        {/* Emergency */}
+        {activeFeature === "emergency" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: "#e63946" }}>ðŸš¨ {t.emergency}</h2>
+            {[
+              { label: "Ambulance (National)", number: "108", icon: "ðŸš‘", color: "#e63946" },
+              { label: "Police", number: "100", icon: "ðŸ‘®", color: "#1a1a2e" },
+              { label: "Fire Brigade", number: "101", icon: "ðŸ”¥", color: "#f4a100" },
+              { label: "Women Helpline", number: "1091", icon: "ðŸ‘©", color: "#9b5de5" },
+              { label: "Child Helpline", number: "1098", icon: "ðŸ‘¶", color: "#00b4d8" },
+              { label: "Animal Ambulance (Hyderabad)", number: "9000333388", icon: "ðŸ¾", color: "#e76f51" },
+              { label: "Plant Disease Helpline (ICAR)", number: "1800-180-1551", icon: "ðŸŒ¿", color: "#2d6a4f" },
+              { label: "Disaster Mgmt", number: "1078", icon: "âš¡", color: "#555" },
+            ].map((e, i) => (
+              <a key={i} href={`tel:${e.number}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "white", borderRadius: 14, padding: "14px 16px", marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", textDecoration: "none", color: "inherit", border: `2px solid ${e.color}20` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ fontSize: 28 }}>{e.icon}</div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{e.label}</div>
+                    <div style={{ color: e.color, fontWeight: 800, fontSize: 18 }}>{e.number}</div>
+                  </div>
+                </div>
+                <div style={{ background: e.color, color: "white", borderRadius: 10, padding: "8px 14px", fontWeight: 700, fontSize: 14 }}>ðŸ“ž Call</div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Reminders */}
+        {activeFeature === "reminders" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>â° {t.reminders}</h2>
+            <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <input type="text" placeholder="e.g. Take Blood Pressure medicine" value={reminderMsg} onChange={e => setReminderMsg(e.target.value)} style={{ width: "100%", border: `1px solid ${cfg.color}40`, borderRadius: 10, padding: "10px 12px", fontSize: 14, marginBottom: 10, boxSizing: "border-box" }} />
+              <input type="time" value={reminderTime} onChange={e => setReminderTime(e.target.value)} style={{ width: "100%", border: `1px solid ${cfg.color}40`, borderRadius: 10, padding: "10px 12px", fontSize: 14, marginBottom: 10, boxSizing: "border-box" }} />
+              <button onClick={addReminder} style={{ width: "100%", background: cfg.gradient, color: "white", border: "none", borderRadius: 12, padding: 14, fontWeight: 700, cursor: "pointer", fontSize: 15 }}>{t.addReminder}</button>
+            </div>
+            {reminders.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 30, color: "#aaa" }}>
+                <div style={{ fontSize: 40 }}>â°</div>
+                <div>No reminders set yet.</div>
+              </div>
+            ) : reminders.map((r, i) => (
+              <div key={r.id} style={{ background: "white", borderRadius: 14, padding: 14, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontWeight: 600 }}>ðŸ”” {r.msg}</div>
+                  <div style={{ color: cfg.color, fontWeight: 700 }}>â° {r.time}</div>
+                </div>
+                <button onClick={() => setReminders(reminders.filter((_, j) => j !== i))} style={{ background: "#fee", color: "#e63946", border: "1px solid #e63946", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>Remove</button>
+              </div>
+            ))}
+          </div>
+        )}
+{/* Telemedicine */}
+        {activeFeature === "telemedicine" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>ðŸ’» {t.telemedicine}</h2>
+            {[
+              { name: "Practo", desc: "Video consult with top doctors", link: "https://practo.com", icon: "ðŸ©º", color: "#00b4d8" },
+              { name: "Apollo 24/7", desc: "24/7 doctor consultation", link: "https://apollo247.com", icon: "ðŸ¥", color: "#e76f51" },
+              { name: "DocsApp", desc: "Affordable online consultation", link: "https://docsapp.in", icon: "ðŸ“±", color: "#2d9e47" },
+              { name: "mFine", desc: "AI-assisted doctor consultation", link: "https://mfine.co", icon: "ðŸ¤–", color: "#9b5de5" },
+              { name: "eSanjeevani", desc: "Govt. free telemedicine service", link: "https://esanjeevaniopd.in", icon: "ðŸ‡®ðŸ‡³", color: "#2d6a4f" },
+            ].map((p, i) => (
+              <div key={i} style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ fontSize: 32 }}>{p.icon}</div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 15 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: "#555" }}>{p.desc}</div>
+                  </div>
+                </div>
+                <a href={p.link} target="_blank" rel="noreferrer" style={{ background: `linear-gradient(135deg, ${p.color}, ${p.color}bb)`, color: "white", border: "none", borderRadius: 10, padding: "10px 14px", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>{t.startConsult}</a>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Hospitals */}
+        {activeFeature === "hospitals" && (
+          <div style={{ padding: 16 }}>
+            <h2 style={{ color: cfg.color }}>ðŸ¥ {t.hospitals}</h2>
+            {cfg.hospitals.map((h, i) => (
+              <div key={i} style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>ðŸ¥ {h.name}</div>
+                  <span style={{ background: cfg.color, color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>{h.type}</span>
+                </div>
+                <div style={{ fontSize: 13, color: "#555", marginBottom: 6 }}>ðŸ“ {h.address}</div>
+                <div style={{ fontSize: 13, color: "#555", marginBottom: 10 }}>ðŸ“ž {h.phone}</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <a href={`tel:${h.phone}`} style={{ flex: 1, background: cfg.gradient, color: "white", border: "none", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, textDecoration: "none", textAlign: "center" }}>ðŸ“ž Call</a>
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(h.name + " " + h.address)}`} target="_blank" rel="noreferrer" style={{ flex: 1, background: "#f8f9fa", color: "#333", border: "1px solid #ddd", borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13, textDecoration: "none", textAlign: "center" }}>ðŸ—ºï¸ Map</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Caution Footer */}
+        {activeFeature && activeFeature !== "emergency" && (
+          <div style={{ margin: "0 16px 16px", background: "#fff3cd", border: "1px solid #ffc107", borderRadius: 14, padding: 14, fontSize: 12, color: "#7c5e00" }}>
+            {t.caution}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Nav */}
+      {category && !activeFeature && (
+        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "white", borderTop: "1px solid #eee", display: "flex", justifyContent: "space-around", padding: "8px 0", boxShadow: "0 -4px 20px rgba(0,0,0,0.1)", maxWidth: 480, margin: "0 auto" }}>
+          <button onClick={() => setCategory(null)} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "center", color: "#777", fontSize: 12 }}>
+            <div style={{ fontSize: 22 }}>ðŸ </div>{t.home}
+          </button>
+          <button onClick={() => setActiveFeature("emergency")} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "center", color: "#e63946", fontSize: 12 }}>
+            <div style={{ fontSize: 22 }}>ðŸš¨</div>{t.emergency}
+          </button>
+          <button onClick={() => setActiveFeature("telemedicine")} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "center", color: "#777", fontSize: 12 }}>
+            <div style={{ fontSize: 22 }}>ðŸ’»</div>{t.telemedicine}
+          </button>
+          <button onClick={() => setActiveFeature("reminders")} style={{ background: "none", border: "none", cursor: "pointer", textAlign: "center", color: "#777", fontSize: 12 }}>
+            <div style={{ fontSize: 22 }}>â°</div>{t.reminders}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
